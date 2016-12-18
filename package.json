@@ -2,9 +2,6 @@
   "name": "config-editor",
   "version": "1.0.0",
   "description": "Firmware configuration editor",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/luc-github/FW-config-editor.git"
@@ -15,6 +12,14 @@
   "author": "Luc LEBOSSE",
   "license": "MIT",
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "gulp": "latest",
+    "del": "latest",
+    "gulp-clean-css": "latest",
+    "gulp-concat": "latest",
+    "gulp-htmlmin": "latest",
+    "gulp-replace": "latest",
+    "gulp-smoosher": "latest",
+    "gulp-uglify": "latest",
+    "gulp-gzip": "latest"
   }
 }
