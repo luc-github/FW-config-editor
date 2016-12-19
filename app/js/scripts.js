@@ -1,7 +1,8 @@
 window.onload = function() {
-}
+};
 
-function Sendcommand(commandtxt, showresult=false){
+function Sendcommand(commandtxt, showresult){
+ showresult = typeof showresult  === 'undefined' ? false: b;
 var xmlhttp = new XMLHttpRequest();
 var url = "/command?plain="+encodeURIComponent(commandtxt);
 if (!showresult)url = "/command_silent?plain="+encodeURIComponent(commandtxt);
@@ -12,7 +13,7 @@ if (showresult){
       textarea.innerHTML =  textarea.innerHTML + xmlhttp.responseText;
       textarea.scrollTop = textarea.scrollHeight;
      } 
-    }
+    };
 }
 xmlhttp.open("GET", url, true);
 xmlhttp.send();

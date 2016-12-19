@@ -5,7 +5,7 @@ More option may come later
 
 The web server is an ESP3D one, but it should work on native smoothieware webserver also (TBC)
 
-##Repetier EEPROM
+##How to edit Repetier's EEPROM ?
 the EEPROM content can be catched by command __M205__
 ```
 EPR:0 1126 0 Filament Sensor On:
@@ -16,7 +16,7 @@ EPR:3 129 0.000 Filament printed [m]
 and modified by M206 command
 `M206 T[type] P[pos] [Sint(long] [Xfloat]`
 
-##Smoothieware config.txt
+##How to edit Smoothieware's config.txt ?
 The file content can be catched by __ls /sd/config.txt__
 ```
 # Robot module configurations : general handling of movement G-codes and slicing into moves
@@ -28,3 +28,11 @@ and modified by console command
 
 
 So mechanism is almost identical, just commands change as well as flags and separators :winkle:
+
+##How to build file from git sources ?
+Because result is compressed single file there are some tools to help  
+
+1 - Install node.js from https://nodejs.org
+2 - In FW-config-editor git directory type `npm install`
+3 - Build solution type `gulp package`
+4 - Result is config.html.gz
