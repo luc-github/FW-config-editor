@@ -12,7 +12,9 @@
   "author": "Luc LEBOSSE",
   "license": "MIT",
   "devDependencies": {
-    "gulp": "latest",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "jshint": "latest",
+    "gulp-jshint": "latest",
     "del": "latest",
     "gulp-clean-css": "latest",
     "gulp-concat": "latest",
