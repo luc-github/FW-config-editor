@@ -16,6 +16,8 @@ EPR:3 129 0.000 Filament printed [m]
 and modified by M206 command
 `M206 T[type] P[pos] [Sint(long] [Xfloat]`
 
+<img src=https://raw.githubusercontent.com/luc-github/FW-config-editor/master/images/repetier_screen.png><br>  
+
 ##How to edit Smoothieware's config.txt ?
 The file content can be catched by __ls /sd/config.txt__
 ```
