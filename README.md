@@ -34,7 +34,7 @@ So mechanism is almost identical, just commands change as well as flags and sepa
 ##How to build file from git sources ?
 Because result is compressed single file there are some tools to help  
 
-1 - Install node.js from https://nodejs.org
-2 - In FW-config-editor git directory type `npm install`
-3 - Build solution type `gulp package`
-4 - Result is config.html.gz
+1 - Install node.js from https://nodejs.org   
+2 - In FW-config-editor git directory type `npm install`   
+3 - Build solution type `gulp package`   
+4 - Result is config.html.gz  
