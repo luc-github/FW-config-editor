@@ -8,6 +8,7 @@ function get_label(sline){
         var tsize = tline.length;
         if (tsize >3){
             var result = "";
+            var i = 0;
             for (i = 3; i < tsize ; i++){
                 if (tline[i][0] == '[') break;
                 result += tline[i]+" ";
@@ -76,6 +77,7 @@ function is_entry(sline){
 }
 
 function create_entry(sentry){
+    console.log("Processing" + sentry);
     var container_block = document.getElementById("editor_table");    
     var trblock;
      var tdblock;
@@ -93,41 +95,57 @@ function create_entry(sentry){
    
      //label
     tdblock = document.createElement("td");
-    tdblock.style="width:20px";
     var t = document.createTextNode(get_label(sentry)); 
     tdblock.appendChild(t);
     trblock.appendChild(tdblock);
     container_block.appendChild(trblock);
     //value
     tdblock = document.createElement("td");
-    tdblock.style="width:20px";
+    
+    var divrowblock = document.createElement("div");
+    divrowblock.className ="row";
+    var divcolblock = document.createElement("div");
+    divcolblock.className ="col-lg-6";
+    var divgroupblock = document.createElement("div");
+    divgroupblock.className ="input-group";
+    var spanblock = document.createElement("span");
+    spanblock.className ="input-group-btn";
+    
     var inputblock = document.createElement("input");
+    inputblock.className ="form-control";
+    inputblock.style="width:auto";
     if (target_FW.toLowerCase() != "smoothieware"){
         inputblock.type="number";
         inputblock.min=0;
     } else {
                 inputblock.type="text";
                 }
-    inputblock.style="width:70px";    
     inputblock.value = get_value(sentry);
-    tdblock.appendChild(inputblock);
-    trblock.appendChild(tdblock);
     var buttonblock = document.createElement("button");
+    buttonblock.className ="btn btn-default";
+    buttonblock.type ="button";
     t = document.createTextNode("Set");
     buttonblock.onclick = function() { 
             var value = inputblock.value;
-            if ((value.trim()[0]=='-') || (value=="") || (value.toLowerCase().indexOf("e")!=-1)){
+            if ((value.trim()[0] == '-') || ( value.length === 0) || (value.toLowerCase().indexOf("e")!=-1)){
                 inputblock.value=get_value(sentry);
             } else {
-                alert(get_command(sentry) + value.trim()); 
+                var cmd = get_command(sentry) + value.trim();
+                console.log(cmd);
+                Sendcommand(cmd); 
             }
             
         };
     buttonblock.appendChild(t);
-    tdblock.appendChild(buttonblock);
+    spanblock.appendChild(buttonblock);
+    divgroupblock.appendChild(inputblock);
+    divgroupblock.appendChild(spanblock);
+    divcolblock.appendChild(divgroupblock);
+    divrowblock.appendChild(divcolblock);
+    tdblock.appendChild(divrowblock);
+    trblock.appendChild(tdblock);
     //help
     tdblock = document.createElement("td");
-    tdblock.style="width:20px";
     t = document.createTextNode(get_help(sentry)); 
     tdblock.appendChild(t);
     trblock.appendChild(tdblock);
@@ -137,14 +155,18 @@ window.onload = function() {
     var sline;
     if (target_FW.toLowerCase() == "repetier"){
         document.getElementById("target_fw").innerHTML="Repetier EEPROM editor";
-        sline = "EPR:2 83 360000 Stop stepper after inactivity [ms,0=off]";
+          //check if need comment
+          var comment = document.getElementById("comment");
+          comment.style.display="none";
+      /*  sline = "EPR:2 83 360000 Stop stepper after inactivity [ms,0=off]";
         create_entry(sline);
         sline = "EPR:0 1028 7 Language";
         create_entry(sline);
         sline = "EPR:3 1160 180.000 Temp Ext PLA:";
         create_entry(sline);
         sline = "EPR:1 239 1 Extr.1 temp. stabilize time [s]";
-        create_entry(sline);}
+        create_entry(sline);
+        */}
     else if (target_FW.toLowerCase() == "smoothieware"){
          document.getElementById("target_fw").innerHTML="Smoothieware config editor";
         sline = "# Robot module configurations : general handling of movement G-codes and slicing into moves";
@@ -157,6 +179,37 @@ window.onload = function() {
         create_entry(sline);}
     else alert(target_FW.toLowerCase());
 };
+
+function Refresh(){
+    var commandtxt = "";
+     if (target_FW.toLowerCase() == "repetier"){
+         commandtxt = "M205";
+     }
+     else if (target_FW.toLowerCase() == "smoothieware"){
+         commandtxt = "cat /sd/config.txt";
+     }
+     var container_block = document.getElementById("editor_table"); 
+     container_block.innerHTML="";
+    var xmlhttp = new XMLHttpRequest();
+    var url = "http://192.168.1.65/command?plain="+encodeURIComponent(commandtxt);
+    xmlhttp.onreadystatechange = function() {
+     if (xmlhttp.readyState == 4 && xmlhttp.status === 200) {
+         console.log("got it, ");
+         var txt = xmlhttp.responseText;
+         var tlines = txt.split("\n");
+         console.log("got " +  tlines.length + " lines\n" );
+         console.log(xmlhttp.responseText);
+         var i = 0;
+         for (i = 0; i < tlines.length ; i++) {
+            console.log("line " + i);
+            create_entry(tlines[i]);
+        }
+        
+     } 
+    };
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+}
 
 function Sendcommand(commandtxt, showresult){
  showresult = typeof showresult  === 'undefined' ? false: b;

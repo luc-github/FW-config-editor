@@ -4,16 +4,18 @@
         <meta charset="UTF-8">
         <title>Config Editor</title>
         <!-- smoosh -->
-        <link href="css/style.css" rel="stylesheet">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
         <!-- endsmoosh -->
     </head>
 <body>
-    <div id="target_fw">Unknown</div></br>
-    <table class="table table-bordered table-striped" style="width:20px" >
-    <thead style="width:20px"><tr><th style="width:20px" id="comment">Comment</th><th style="width:20px">Entry</th><th style="width:20px">Value</th><th style="width:20px">Help</th></tr></thead>
+    <div class="container">
+    <center><h2><div id="target_fw">Unknown</div></h2><button type="button" class="btn btn-primary" onclick="Refresh();";>Refresh</button></center></br>
+    <table class="table table-bordered table-striped" style="width:auto" >
+    <thead ><tr><th  id="comment">Comment</th><th >Entry</th><th >Value</th><th >Help</th></tr></thead>
     <tbody id="editor_table">
     </tbody>
     </table>
+    </div>
     <!-- smoosh -->
     <script src="js/scripts.js"></script>
     <!-- endsmoosh -->

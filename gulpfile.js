@@ -27,7 +27,7 @@ function scripts() {
 }
 
 function style() {
-        return gulp.src('app/css/style.css')
+        return gulp.src('app/css/bootstrap.min.css')
         .pipe(cleanCSS())
         .pipe(gulp.dest('dist/css'))
 }
