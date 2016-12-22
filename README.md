@@ -28,6 +28,7 @@ default_feed_rate                            4000             # Default rate ( m
 and modified by console command
 `config-set [<configuration_source>] <configuration_setting> <value>`
 
+<img src=https://raw.githubusercontent.com/luc-github/FW-config-editor/master/images/smoothieware_screen.png><br>  
 
 So mechanism is almost identical, just commands change as well as flags and separators :winkle:
 
