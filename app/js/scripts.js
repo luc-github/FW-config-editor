@@ -35,7 +35,7 @@ function get_value(sline){
 function get_help(sline){
     if (target_FW.toLowerCase() == "smoothieware"){
         var pos = sline.indexOf("#");
-        if (pos > -1) return sline.slice(pos+1,-1);
+        if (pos > -1) return sline.slice(pos+1,sline.length);
         else return "";
     } else {
          var tline =  sline.split("[");
@@ -47,13 +47,15 @@ function get_help(sline){
 }
 
 function get_command(sline){
+     var command;
      if (target_FW.toLowerCase() == "smoothieware"){
-        return "set";
+       command = "config-set sd " + get_label(sline) + " ";
+       return command;
     } else {
          var tline =  sline.split(" ");
         if ( tline.length >3){
             var stype = tline[0].split(":");
-            var command = "M206 T" + stype[1];
+            command = "M206 T" + stype[1];
              command += " P" + tline[1];
              if (stype[1] == "3") command += " X";
              else command += " S";
@@ -83,15 +85,15 @@ function create_entry(sentry){
     console.log("Processing" + sentry);
     var container_block = document.getElementById("editor_table");    
     var trblock;
+    var t;
     var tdblock;
     var iscomment ;
+    var ssentry;
     while( sentry.indexOf("  ") > -1){ 
-        var ssentry;
         ssentry = sentry.replace("  "," ");
         sentry = ssentry;
     }
     while( sentry.indexOf("##") > -1){ 
-        var ssentry;
         ssentry = sentry.replace("##","#");
         sentry = ssentry;
     }
@@ -121,7 +123,7 @@ function create_entry(sentry){
        
          //label
         tdblock = document.createElement("td");
-        var t = document.createTextNode(get_label(sentry)); 
+        t = document.createTextNode(get_label(sentry)); 
         tdblock.appendChild(t);
         trblock.appendChild(tdblock);
         //value
@@ -151,8 +153,19 @@ function create_entry(sentry){
         buttonblock.type ="button";
         t = document.createTextNode("Set");
         buttonblock.onclick = function() { 
+                var isvalid = true;
                 var value = inputblock.value;
-                if ((value.trim()[0] == '-') || ( value.length === 0) || (value.toLowerCase().indexOf("e")!=-1)){
+                if (target_FW.toLowerCase() == "smoothieware"){
+                    if ((value.trim()[0] == '-') || ( value.length === 0)){
+                        isvalid = false;
+                        } else isvalid = true;
+                    }
+                else {
+                    if ((value.trim()[0] == '-') || ( value.length === 0) || (value.toLowerCase().indexOf("e")!=-1)){
+                        isvalid = false;
+                        } else isvalid = true;
+                    }
+                if (!isvalid){
                     inputblock.value=get_value(sentry);
                 } else {
                     var cmd = get_command(sentry) + value.trim();
@@ -194,8 +207,8 @@ window.onload = function() {
         create_entry(sline);
         */}
     else if (target_FW.toLowerCase() == "smoothieware"){
-         document.getElementById("target_fw").innerHTML="Smoothieware config editor";
-        sline = "# Robot module configurations : general handling of movement G-codes and slicing into moves";
+        document.getElementById("target_fw").innerHTML="Smoothieware config editor";
+        /*sline = "# Robot module configurations : general handling of movement G-codes and slicing into moves";
         create_entry(sline);
         sline = "default_feed_rate                            4000             # Default rate ( mm/minute ) for G1/G2/G3 moves";
         create_entry(sline);
@@ -206,7 +219,7 @@ window.onload = function() {
         sline = "default_feed_rate";
         create_entry(sline);
          sline = "";
-        create_entry(sline);
+        create_entry(sline);*/
         }
     else alert(target_FW.toLowerCase());
 };
