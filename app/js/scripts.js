@@ -1,11 +1,11 @@
-var target_FW = "repetier";
+var target_FW = "smoothieware";
 
 function get_label(sline){
+    var tline =  sline.trim().split(" ");
+    var tsize = tline.length;
      if (target_FW.toLowerCase() == "smoothieware"){
-        return "label";
+          return tline[0];
     } else {
-        var tline =  sline.split(" ");
-        var tsize = tline.length;
         if (tsize >3){
             var result = "";
             var i = 0;
@@ -20,10 +20,12 @@ function get_label(sline){
 }
 
 function get_value(sline){
+    var tline =  sline.split(" ");
     if (target_FW.toLowerCase() == "smoothieware"){
-        return "value";
+        if ((tline.length >1) && tline[0][0]!='#') return tline[1];
+          else return "???";
     } else {
-        var tline =  sline.split(" ");
+        
         if ( tline.length >3){
               return tline[2];
         } else return "???";
@@ -32,7 +34,9 @@ function get_value(sline){
 
 function get_help(sline){
     if (target_FW.toLowerCase() == "smoothieware"){
-        return "help";
+        var pos = sline.indexOf("#");
+        if (pos > -1) return sline.slice(pos+1,-1);
+        else return "";
     } else {
          var tline =  sline.split("[");
          if (tline.length > 1){
@@ -60,8 +64,7 @@ function get_command(sline){
 
 function is_commented(sline){
     if (target_FW.toLowerCase() == "smoothieware"){
-        line = sline.trim();
-        return  sline.startsWith("#");
+        return  sline.trim().startsWith("#");
     } else {
         return false;
     }
@@ -80,75 +83,98 @@ function create_entry(sentry){
     console.log("Processing" + sentry);
     var container_block = document.getElementById("editor_table");    
     var trblock;
-     var tdblock;
-     if (!is_entry(sentry))return;
+    var tdblock;
+    var iscomment ;
+    while( sentry.indexOf("  ") > -1){ 
+        var ssentry;
+        ssentry = sentry.replace("  "," ");
+        sentry = ssentry;
+    }
+    while( sentry.indexOf("##") > -1){ 
+        var ssentry;
+        ssentry = sentry.replace("##","#");
+        sentry = ssentry;
+    }
+    iscomment= is_commented(sentry);
+    if (!is_entry(sentry))return;
      trblock = document.createElement("tr");
      //comment
     tdblock = document.createElement("td");
-     trblock.appendChild(tdblock);
-     //check if it is a smoothieware
-     if (target_FW.toLowerCase() != "smoothieware"){
-          var comment = document.getElementById("comment");
-          comment.style.display="none";
-          tdblock.style.display="none";
-     }
-   
-     //label
-    tdblock = document.createElement("td");
-    var t = document.createTextNode(get_label(sentry)); 
-    tdblock.appendChild(t);
     trblock.appendChild(tdblock);
     container_block.appendChild(trblock);
-    //value
-    tdblock = document.createElement("td");
-    
-    var divrowblock = document.createElement("div");
-    divrowblock.className ="row";
-    var divcolblock = document.createElement("div");
-    divcolblock.className ="col-lg-6";
-    var divgroupblock = document.createElement("div");
-    divgroupblock.className ="input-group";
-    var spanblock = document.createElement("span");
-    spanblock.className ="input-group-btn";
-    
-    var inputblock = document.createElement("input");
-    inputblock.className ="form-control";
-    inputblock.style="width:auto";
-    if (target_FW.toLowerCase() != "smoothieware"){
-        inputblock.type="number";
-        inputblock.min=0;
-    } else {
-                inputblock.type="text";
+     if (iscomment){
+         tdblock = document.createElement("td");
+         trblock.appendChild(tdblock);
+         console.log("is comment:" + sentry);
+         t = document.createTextNode(sentry.trim()); 
+         tdblock.appendChild(t);
+         tdblock.colSpan="3";
+         tdblock.className ="info";
+     }
+     else{
+         //check if it is a smoothieware
+         if (target_FW.toLowerCase() != "smoothieware"){
+              var comment = document.getElementById("comment");
+              comment.style.display="none";
+              tdblock.style.display="none";
+         }
+       
+         //label
+        tdblock = document.createElement("td");
+        var t = document.createTextNode(get_label(sentry)); 
+        tdblock.appendChild(t);
+        trblock.appendChild(tdblock);
+        //value
+        tdblock = document.createElement("td");
+        
+        var divrowblock = document.createElement("div");
+        divrowblock.className ="row";
+        var divcolblock = document.createElement("div");
+        divcolblock.className ="col-lg-6";
+        var divgroupblock = document.createElement("div");
+        divgroupblock.className ="input-group";
+        var spanblock = document.createElement("span");
+        spanblock.className ="input-group-btn";
+        
+        var inputblock = document.createElement("input");
+        inputblock.className ="form-control";
+        inputblock.style="width:auto";
+        if (target_FW.toLowerCase() != "smoothieware"){
+            inputblock.type="number";
+            inputblock.min=0;
+        } else {
+                    inputblock.type="text";
+                    }
+        inputblock.value = get_value(sentry);
+        var buttonblock = document.createElement("button");
+        buttonblock.className ="btn btn-default";
+        buttonblock.type ="button";
+        t = document.createTextNode("Set");
+        buttonblock.onclick = function() { 
+                var value = inputblock.value;
+                if ((value.trim()[0] == '-') || ( value.length === 0) || (value.toLowerCase().indexOf("e")!=-1)){
+                    inputblock.value=get_value(sentry);
+                } else {
+                    var cmd = get_command(sentry) + value.trim();
+                    console.log(cmd);
+                    Sendcommand(cmd); 
                 }
-    inputblock.value = get_value(sentry);
-    var buttonblock = document.createElement("button");
-    buttonblock.className ="btn btn-default";
-    buttonblock.type ="button";
-    t = document.createTextNode("Set");
-    buttonblock.onclick = function() { 
-            var value = inputblock.value;
-            if ((value.trim()[0] == '-') || ( value.length === 0) || (value.toLowerCase().indexOf("e")!=-1)){
-                inputblock.value=get_value(sentry);
-            } else {
-                var cmd = get_command(sentry) + value.trim();
-                console.log(cmd);
-                Sendcommand(cmd); 
-            }
-            
-        };
-    buttonblock.appendChild(t);
-    spanblock.appendChild(buttonblock);
-    divgroupblock.appendChild(inputblock);
-    divgroupblock.appendChild(spanblock);
-    divcolblock.appendChild(divgroupblock);
-    divrowblock.appendChild(divcolblock);
-    tdblock.appendChild(divrowblock);
-    trblock.appendChild(tdblock);
-    //help
-    tdblock = document.createElement("td");
-    t = document.createTextNode(get_help(sentry)); 
-    tdblock.appendChild(t);
-    trblock.appendChild(tdblock);
+                
+            };
+        buttonblock.appendChild(t);
+        spanblock.appendChild(buttonblock);
+        divgroupblock.appendChild(inputblock);
+        divgroupblock.appendChild(spanblock);
+        divcolblock.appendChild(divgroupblock);
+        divrowblock.appendChild(divcolblock);
+        tdblock.appendChild(divrowblock);
+        trblock.appendChild(tdblock);
+        //help
+        tdblock = document.createElement("td");
+        t = document.createTextNode(get_help(sentry)); 
+        tdblock.appendChild(t);
+        trblock.appendChild(tdblock);
+    }
 }
 
 window.onload = function() {
@@ -176,7 +202,12 @@ window.onload = function() {
         sline = "                                                              # note it is invalid for both the above be 0";
         create_entry(sline);
         sline = "##panel.contrast                               18                # override contrast setting (default is 18)";
-        create_entry(sline);}
+        create_entry(sline);
+        sline = "default_feed_rate";
+        create_entry(sline);
+         sline = "";
+        create_entry(sline);
+        }
     else alert(target_FW.toLowerCase());
 };
 
@@ -191,7 +222,7 @@ function Refresh(){
      var container_block = document.getElementById("editor_table"); 
      container_block.innerHTML="";
     var xmlhttp = new XMLHttpRequest();
-    var url = "http://192.168.1.65/command?plain="+encodeURIComponent(commandtxt);
+    var url = "/command?plain="+encodeURIComponent(commandtxt);
     xmlhttp.onreadystatechange = function() {
      if (xmlhttp.readyState == 4 && xmlhttp.status === 200) {
          console.log("got it, ");
