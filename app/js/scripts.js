@@ -156,7 +156,7 @@ function create_entry(sentry){
                 var isvalid = true;
                 var value = inputblock.value;
                 if (target_FW.toLowerCase() == "smoothieware"){
-                    if ((value.trim()[0] == '-') || ( value.length === 0)){
+                    if ((value.trim()[0] == '-') || ( value.length === 0) || (value.toLowerCase().indexOf("#")!=-1)){
                         isvalid = false;
                         } else isvalid = true;
                     }
