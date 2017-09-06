@@ -1,4 +1,4 @@
-# FW-config-editor
+# FW-config-editor is no more maintained it is now part of https://github.com/luc-github/ESP3D-WEBUI
 Firmware configuration editor
 The purpose of this "tool" is to allow edition of repetier EEPROM and smoothieware config.txt using web page.
 More option may come later
